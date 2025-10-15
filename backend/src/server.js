@@ -10,9 +10,13 @@ app.use(express.json())
 connectDB()
 
 app.use("/User",userrouter)
-
-
 const port=process.env.PORT
+
+
+app.get("/", (req, res) => {
+  res.send("Database Connected...");
+});
+
 
 app.listen(port,()=>{
     console.log(`server is running on http://localhost:${port}`)
