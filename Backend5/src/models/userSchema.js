@@ -3,19 +3,18 @@ import mongoose from "mongoose";
 
 
 const userSchema = new mongoose.Schema({
-    name:{
+    Movie :{
         type: String,
         required: true
     },
 
-    age:{
-        type: Number,
+    Director :{
+        type: String,
         required: true
     }
 });
 
 
-// create and export model 
 
 const User = mongoose.model("User", userSchema);
 

@@ -39,5 +39,5 @@ app.post("/add", async(req, res)=>{
 
 // start the server
 app.listen(PORT, ()=>{
-    console.log(`SERVER IS RUNNING ON http://localhost:${PORT}`)
+    console.log(`SERVER IS RUNNING ON https://localhost:${PORT}`)
 })

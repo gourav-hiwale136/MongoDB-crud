@@ -5,7 +5,7 @@ import mongoose, { Mongoose } from "mongoose";
 const CONNECTDB = async(url) =>{
     try {
         await mongoose.connect(url)
-        console.log("ARE ZALN NA CONNECT");
+        console.log("DB CONNECTED");
         
     } catch (error) {
         console.log(error);
@@ -14,4 +14,4 @@ const CONNECTDB = async(url) =>{
     }
 }
 
-export default CONNECTDB
+export default CONNECTDB;

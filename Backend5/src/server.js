@@ -7,52 +7,27 @@ dotenv.config()
 const app = express()
 app.use(express.json())
 CONNECTDB(process.env.MONGO_URL)
+// User()
 
-
-
-// ROUTE
-const PORT = process.env.PORT || 4444
+const PORT = process.env.PORT 
 app.get("/", (req, res)=>{
     res.send("SERVER IS CONNECTED")
 })
+ 
 
-app.post ("/add", async(req, res)=>{
-    // console.log("✅ POST /add route hit");
-    try {
-        const {name, age} = req.body
-        console.log("Recieved data", name, age);
-        
-        const newUser = new User ({name, age});
-        await newUser.save();
+app.post("/add", async(req,res)=>{
+    
+ const {Movie, Director} = req.body;
+        console.log("Data Recieved", Movie,Director);
+        const newUser = new User ({Movie,Director})
+        await newUser.save()
+        return res.status(200).json({
+           message: "Data Fetch Successfully",
+           data : newUser
 
-        res.status(201).json({
-            message: "User added successfully!",
-            data: newUser
         })
-        console.log(newUser);
-    } catch (error) {
-        res.status(500).json({
-            message: "Error saving User"
-            
-            
-        })
-    }
 })
 
-app.get("/find", async(req,res)=>{
-  try {
-      const user =await User.find() 
-      res.send(200).json({
-          message:"all user's found successfully",
-          data : user
-        })
-    } catch (error) {
-      console.log(error);
-      
-    }
-})
-
-// START THE SERVER 
 app.listen(PORT, ()=>{
     console.log(`SERVER IS RUNNING ON http://localhost:${PORT}`);
     
