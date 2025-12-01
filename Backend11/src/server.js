@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use("/users", userRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT  ;
 
 app.listen(PORT, () => {
   console.log(`SERVER IS RUNNING ON http://localhost:${PORT}`);
