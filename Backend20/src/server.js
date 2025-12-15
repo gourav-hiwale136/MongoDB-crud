@@ -1,12 +1,15 @@
 import express from "express"
 import connectDB from "./config/db.js";
 import dotenv from "dotenv"
-import userRouter from "../../Backend19/src/routes/userRoute.js";
+import userRouter from "./routes/userRoute.js";
 
-dotenv.config()
+dotenv.config();
 const app = express();
 connectDB(process.env.MONGO_URL);
-app.use("/api/user",userRouter)
+app.use(express.json())
+
+app.use("/api/user" , userRouter)
+
 
 const PORT = process.env.PORT || 6666
 
