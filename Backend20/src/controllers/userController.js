@@ -33,4 +33,56 @@ const Login = async(req,res)=>{
     }
 };
 
-export {Signup,Login}
+const UpdateUser = async(req,res)=>{
+    try {
+        const {id} = req.params;
+        const {Username,Email,Password}  = req.body;
+        const updatedUser = await User.findByIdAndUpdate(id, {
+          Username,
+          Email,
+          Password,
+        },{new:true});
+
+        if(!updatedUser){
+            return res.status(404).json({
+                message:"User Not Found"})
+        }
+
+        return res.status(200).json({
+            message:"User Updated Successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error:"Internal Server Issues"
+        });
+    }
+};
+
+const DeleteUser = async(req,res)=>{
+    try {
+        const {id} = req.params;
+        const {Username,Email,Password} = req.body;
+        const deletedUsers = await User.findByIdAndDelete(id)
+        if(!deletedUsers){
+            return res.status(404).json({
+                message:"User Not Found",
+            }); 
+        }
+
+         return res.status(201).json({
+            message:"User Deleted Successfully",
+            users: deletedUsers
+         });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error:"internal Server Issues"
+        });
+        
+    };
+};
+
+export {Signup,Login,UpdateUser,DeleteUser}
