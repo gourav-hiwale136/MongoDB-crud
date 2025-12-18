@@ -4,8 +4,8 @@ import { DeleteUser, Login, Signup, UpdateUser} from "../controllers/userControl
 
 const userRouter = express.Router();
 
-userRouter.post("/create", Signup);
-userRouter.get("/get" , Login);
+userRouter.post("/signup", Signup);
+userRouter.post("/login" , Login);
 userRouter.put("/update/:id",UpdateUser);
 userRouter.delete("/delete/:id",DeleteUser)
 
