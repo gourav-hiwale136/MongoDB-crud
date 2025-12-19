@@ -10,10 +10,15 @@ const app = express();
 connectDB(process.env.MONGO_URL);
 app.use(express.json());
 app.use("/api/user", userRouter);
-app.use("/api/product", productRouter)
+app.use("/api/product", productRouter);
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
 
 const PORT = process.env.PORT || 4045
 
 app.listen(PORT, ()=>{
     console.log(`SERVER IS RUNNING ON http://localhost:${PORT}` )
-})
+});

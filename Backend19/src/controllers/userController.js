@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 
 
@@ -69,21 +70,35 @@ const UpdateUser = async (req, res) => {
 const Login = async (req, res) => {
   try {
     const { Email, Password } = req.body;
+
+    console.log("REQ Password:", Password);
+
     const user = await User.findOne({ Email });
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
-    };
+    }
+
+    console.log("DB Password:", user.Password);
 
     const isPasswordMatch = await bcrypt.compare(Password, user.Password);
 
+    console.log("Compare result:", isPasswordMatch);
+
     if (!isPasswordMatch) {
       return res.status(401).json({ message: "Invalid Password" });
-    };
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, Email: user.Email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     user.Password = undefined;
 
     return res.status(200).json({
       message: "Login Successful",
+      token,
       user,
     });
   } catch (error) {
