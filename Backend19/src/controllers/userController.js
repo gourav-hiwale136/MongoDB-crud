@@ -43,7 +43,6 @@ const UpdateUser = async (req, res) => {
       Mobile,
     };
 
-    // hash password only if provided
     if (Password) {
       updateData.Password = await bcrypt.hash(Password, 10);
     }
@@ -68,32 +67,18 @@ const UpdateUser = async (req, res) => {
 
 
 const Login = async (req, res) => {
-  console.log("➡️ LOGIN API HIT"); // 🔥 proof API is called
-
   try {
-    console.log("Request body:", req.body);
-
     const { Email, Password } = req.body;
-
-    console.log("Entered Password:", Password);
-
     const user = await User.findOne({ Email });
-
-    console.log("User from DB:", user);
-
     if (!user) {
       return res.status(404).json({ message: "User Not Found" });
-    }
-
-    console.log("Stored password in DB:", user.Password);
+    };
 
     const isPasswordMatch = await bcrypt.compare(Password, user.Password);
 
-    console.log("Password Match Result:", isPasswordMatch);
-
     if (!isPasswordMatch) {
       return res.status(401).json({ message: "Invalid Password" });
-    }
+    };
 
     user.Password = undefined;
 
@@ -102,10 +87,20 @@ const Login = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.log("LOGIN ERROR:", error);
+    console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+const getUsers = async (req,res)=>{
+  try {
+    const getuser = await User.find();
+    return res.status(201).json({message:"All Users Fetched Successfully", getuser});
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({message:"Internal Server Issues"});
+  }
+}
 
 
 const DeleteUser = async (req,res)=>{
@@ -127,4 +122,4 @@ const DeleteUser = async (req,res)=>{
   }
 };
 
-export {Signup,Login,UpdateUser,DeleteUser};
+export {Signup,Login,getUsers,UpdateUser,DeleteUser};
