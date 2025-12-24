@@ -1,17 +1,16 @@
 import express from "express"
 import { DeleteUser, getUsers, Login, Signup, UpdateUser } from "../controllers/userController.js";
-import authMiddleware from "../middleware/authMiddleware.js";
-import adminMiddleware from "../middleware/adminMiddleware.js";
+import userAuthMiddleware from "../middleware/userAuthMiddleware.js";
 
 
 
 const userRouter = express.Router();
 
 userRouter.post("/signup", Signup);
-userRouter.post("/login" , Login);
-userRouter.get("/get" , authMiddleware, getUsers);
-userRouter.put("/update/:id", authMiddleware, UpdateUser);
-userRouter.delete("/delete/:id", authMiddleware, adminMiddleware, DeleteUser);
+userRouter.post("/login" ,userAuthMiddleware, Login);
+userRouter.get("/get", getUsers);
+userRouter.put("/update/:id", UpdateUser);
+userRouter.delete("/delete/:id", DeleteUser);
 
 
 export default userRouter;
