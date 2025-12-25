@@ -103,6 +103,7 @@ const getUsers = async (req, res) => {
   try {
     const getuser = await User.find();
     return res.status(201).json({ message: "All Users Fetched Successfully", getuser });
+   
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Issues" });

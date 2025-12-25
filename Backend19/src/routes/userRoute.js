@@ -7,8 +7,8 @@ import userAuthMiddleware from "../middleware/userAuthMiddleware.js";
 const userRouter = express.Router();
 
 userRouter.post("/signup", Signup);
-userRouter.post("/login" ,userAuthMiddleware, Login);
-userRouter.get("/get", getUsers);
+userRouter.post("/login" , Login);
+userRouter.get("/get", userAuthMiddleware, getUsers);
 userRouter.put("/update/:id", UpdateUser);
 userRouter.delete("/delete/:id", DeleteUser);
 

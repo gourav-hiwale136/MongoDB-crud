@@ -1,21 +1,18 @@
 import jwt from "jsonwebtoken";
 
+const userAuthMiddleware = (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ Message: "Token Missing" });
+    }
 
-const userAuthMiddleware = (req,res,next)=>{
-    try {
-        const Token = req.headers.authorization;
-        if(!Token){
-            return res.status(404).json({Message:"Token Missing"});
-        };
-
-        const Decoded = jwt.verify(Token,process.env.JWT_SECRET);
-        req.user = Decoded;
-        next();
-    } catch (error) {
-        return res.status(201).json({Message:"Invalid Or Expire Token"});
-        
-    };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ Message: "Invalid or Expired Token" });
+  }
 };
-
 
 export default userAuthMiddleware;
