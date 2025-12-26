@@ -5,9 +5,16 @@ import jwt from "jsonwebtoken";
 const Signup = async (req, res) => {
   try {
     const { Username, Age, Email, Mobile, Password } = req.body;
+
+    // prevent duplicate email
+    const existingUser = await User.findOne({ Email });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
     const hashedPassword = await bcrypt.hash(Password, 10);
 
-    const newUser = new User({
+    const newUser = await User.create({
       Username,
       Age,
       Email,
@@ -15,11 +22,12 @@ const Signup = async (req, res) => {
       Password: hashedPassword,
     });
 
-    await newUser.save();
+    const userData = newUser.toObject();
+    delete userData.Password;
 
     return res.status(201).json({
       message: "User Signup Successful",
-      user: newUser,
+      user: userData,
     });
   } catch (error) {
     console.log(error);
@@ -27,17 +35,13 @@ const Signup = async (req, res) => {
   }
 };
 
+
 const UpdateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { Username, Age, Email, Mobile, Password } = req.body;
 
-    let updateData = {
-      Username,
-      Age,
-      Email,
-      Mobile,
-    };
+    const updateData = { Username, Age, Email, Mobile };
 
     if (Password) {
       updateData.Password = await bcrypt.hash(Password, 10);
@@ -45,6 +49,7 @@ const UpdateUser = async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, {
       new: true,
+      select: "-Password",
     });
 
     if (!updatedUser) {
@@ -61,6 +66,7 @@ const UpdateUser = async (req, res) => {
   }
 };
 
+
 const Login = async (req, res) => {
   try {
     const { Email, Password } = req.body;
@@ -71,27 +77,26 @@ const Login = async (req, res) => {
     }
 
     const isPasswordMatch = await bcrypt.compare(Password, user.Password);
-
     if (!isPasswordMatch) {
       return res.status(401).json({ message: "Invalid Password" });
-    };
+    }
 
     const token = jwt.sign(
       {
         userId: user._id,
-        Username: user.Username,
         role: user.role,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    
+    const userData = user.toObject();
+    delete userData.Password;
 
     return res.status(200).json({
       message: "Login Successful",
-      user,
-      token
+      user: userData,
+      token,
     });
   } catch (error) {
     console.log(error);
@@ -99,29 +104,35 @@ const Login = async (req, res) => {
   }
 };
 
+
 const getUsers = async (req, res) => {
   try {
-    const getuser = await User.find();
-    return res.status(201).json({ message: "All Users Fetched Successfully", getuser });
-   
+    const users = await User.find().select("-Password");
+
+    return res.status(200).json({
+      message: "All Users Fetched Successfully",
+      users,
+    });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Internal Server Issues" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 const DeleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedUsers = await User.findByIdAndDelete(id);
-    if (!deletedUsers) {
-      res.status(404).json({
-        message: "User Not Found",
-      });
+
+    const deletedUser = await User.findByIdAndDelete(id).select("-Password");
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User Not Found" });
     }
-    res.status(200).json({
+
+    return res.status(200).json({
       message: "User Deleted Successfully",
-      user: deletedUsers,
+      user: deletedUser,
     });
   } catch (error) {
     console.log(error);
