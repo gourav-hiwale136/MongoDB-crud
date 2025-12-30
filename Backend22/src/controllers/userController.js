@@ -4,9 +4,14 @@ import jwt from "jsonwebtoken";
 
 const Signup = async(req,res)=>{
     try {
-        const {Username,Email,Password} = req.body;
+        const {Username,Email,Password, Role} = req.body;
         const hashedPassword = await bcrypt.hash(Password,10)
-        const newUser = new User ({Username,Email,Password:hashedPassword});
+        const newUser = new User({
+          Username,
+          Email,
+          Password: hashedPassword,
+          Role: Email === "admin@gmail.com" ? "admin" : "user",
+        });
         await newUser.save();
         return res.status(201).json({
             Message:"New User Created",
@@ -21,7 +26,7 @@ const Signup = async(req,res)=>{
 const Login = async(req,res)=>{
     try {
         const { Email, Password } = req.body;
-        const user = await User.findOne({ Email });
+        const user = await User.findOne({ Email,});
         if (!user) {
           return res.status(404).json({ Message: "User Not Found" });
         };
@@ -32,7 +37,7 @@ const Login = async(req,res)=>{
          };
 
          const token = jwt.sign(
-           { id: user._id, email: user.Email },
+           { id: user._id, email: user.Email, Role: user.Role},
            process.env.JWT_SECRET,
            { expiresIn: "1d" }
          );
@@ -49,7 +54,6 @@ const Login = async(req,res)=>{
         return res.status(500).json({Message:"Internal Server Issues"});
         
     };
-
 };
 
 const getUsers = async(req,res)=>{
